@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>AngularJS - Pokemon</title>
+    <script src="http://code.angularjs.org/1.0.1/angular-1.0.1.min.js"></script>
+
+    <!-- Materialize CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/css/materialize.min.css">
+
+    <!-- JavaScript for: jQuery, angular, materialize, and angular-materialize. All of which are needed. -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/js/materialize.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular-materialize/0.2.2/angular-materialize.min.js"></script>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <header>
+        <div class="row"></div>
+    </header>
+
+    <main class="container">
+        <div ng-app="pokeApp">
+            <div ng-controller="PokemonController" ng-init="init()">
+                <div class="row center">
+                    <div class="input-field col s12 m4 l4">
+                        <button class="btn waves-effect waves-light" ng-click="new()">New</button>
+                    </div>
+                    <div class="input-field col s12 m4 l4">
+                        <button class="btn waves-effect waves-light" ng-click="save()">Save</button>
+                    </div>
+                </div>
+                <form class="form-inline" name="formPokemon">
+                    <div class="row">
+                        <div class="input-field col s12 m4 l4">
+                            ID<input type="number" ng-model="pokemon.id">
+                            <!-- <label for="pokemon.id">ID</label> -->
+                        </div>
+                        <div class="input-field col s12 m4 l4">
+                            Name<input type="text" ng-model="pokemon.name">
+                            <!-- <label for="pokemon.id">Name</label> -->
+                        </div>
+                        <div class="input-field col s12 m4 l4">
+                            CP<input type="number" ng-model="pokemon.cp">
+                            <!-- <label for="pokemon.cp">CP</label> -->
+                        </div>
+                    </div>
+                </form>
+
+                <table class="highlight centered">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>CP</th>
+                            <th>Editar</th>
+                            <th>Excluir</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="pokemon in pokemons">
+                            <td><strong>{{ pokemon.id }}</strong></td>
+                            <td>{{ pokemon.name }}</td>
+                            <td>{{ pokemon.cp }}</td>
+                            <td><img src="img/edit.png" ng-click="edit(pokemon)" /></td>
+                            <td><img src="img/remove.png" ng-click="remove(pokemon)" /></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</body>
+
+<script src="app.js"></script>
+
+</html>
