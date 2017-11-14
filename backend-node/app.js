@@ -1,5 +1,6 @@
 /* Chamada das Packages que iremos precisar para a nossa aplicação */
 var express = require('express'); //chamando o pacote express
+var cors = require('cors')
 var app = express(); //definção da nossa aplicação através do express
 var bodyParser = require('body-parser'); //chamando o pacote body-parser
 var mysql = require('mysql');
@@ -15,6 +16,7 @@ var objConn = {
 /** Configuração da variável 'app' para usar o 'bodyParser()'.
  * Ao fazermos isso nos permitirá retornar os dados a partir de um POST
  */
+app.use(cors())
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
