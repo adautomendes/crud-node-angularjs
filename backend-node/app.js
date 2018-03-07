@@ -30,9 +30,9 @@ var port = process.env.PORT || 5000;
 var pokemon = express.Router();
 
 /* Rota de Teste para sabermos se tudo está realmente funcionando (acessar através: GET: http://localhost:8000/api) */
-pokemon.get('/insert/:name/:cp', function(req, res) {
-    var name = req.params.name;
-    var cp = req.params.cp;
+pokemon.post('/insert', function(req, res) {
+    var name = req.body.name;
+    var cp = req.body.cp;
 
     var connection = mysql.createConnection(objConn);
 
@@ -53,10 +53,10 @@ pokemon.get('/insert/:name/:cp', function(req, res) {
     connection.end();
 });
 
-pokemon.get('/update/:id/:name/:cp', function(req, res) {
-    var id = req.params.id;
-    var name = req.params.name;
-    var cp = req.params.cp;
+pokemon.post('/update', function(req, res) {
+    var id = req.body.id;
+    var name = req.body.name;
+    var cp = req.body.cp;
 
     var connection = mysql.createConnection(objConn);
 
@@ -118,8 +118,8 @@ pokemon.get('/findById/:id', function(req, res) {
     connection.end();
 });
 
-pokemon.get('/remove/:id', function(req, res) {
-    var id = req.params.id;
+pokemon.delete('/remove', function(req, res) {
+    var id = req.body.id;
 
     var connection = mysql.createConnection(objConn);
 
