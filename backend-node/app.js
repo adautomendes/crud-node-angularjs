@@ -29,7 +29,7 @@ var port = process.env.PORT || 5000;
 /* Aqui o 'pokemon' irá pegar as instâncias das Rotas do Express */
 var pokemon = express.Router();
 
-/* Rota de Teste para sabermos se tudo está realmente funcionando (acessar através: GET: http://localhost:8000/api) */
+/* Rota de Teste para sabermos se tudo está realmente funcionando (acessar através: GET: http://localhost:8000/pokemon) */
 pokemon.post('/insert', function(req, res) {
     var name = req.body.name;
     var cp = req.body.cp;
@@ -118,7 +118,9 @@ pokemon.get('/findById/:id', function(req, res) {
     connection.end();
 });
 
-pokemon.delete('/remove', function(req, res) {
+//Requests DELETE em Angular aceitam Body com dificuldade, então usaremos POST
+pokemon.post('/remove', function(req, res) {
+    console.log(req.body);
     var id = req.body.id;
 
     var connection = mysql.createConnection(objConn);

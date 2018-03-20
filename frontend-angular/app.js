@@ -11,7 +11,7 @@ pokeApp.controller('PokemonController',
         $scope.pokemons = [];
 
         $scope.init = function() {
-            $http.jsonp(ws + 'findAll' + callback)
+            $http.get(ws + 'findAll')
                 .success(function(response) {
                     $scope.pokemons = response;
                     showToast('Load completed!');
@@ -39,12 +39,28 @@ pokeApp.controller('PokemonController',
 
             if (pokemon.name != null && pokemon.cp != null) {
                 var url = ws;
-                if (pokemon.id == null)
-                    url += 'insert/' + pokemon.name + '/' + pokemon.cp;
-                else
-                    url += 'update/' + pokemon.id + '/' + pokemon.name + '/' + pokemon.cp;
 
-                $http.jsonp(url + callback)
+                /** Definindo dados a serem enviados e qual operação */
+                var data;
+                if (pokemon.id == null) {
+                    url += 'insert'
+                     data = {
+                        name: pokemon.name,
+                        cp: pokemon.cp
+                    };
+                } else {
+                    url += 'update';
+                    data = {
+                        id: pokemon.id,
+                        name: pokemon.name,
+                        cp: pokemon.cp
+                    };
+                }
+
+                /** Definindo headers da request */
+                var config = {}
+
+                $http.post(url, data)
                     .success(function(response) {
                         if (response.insertId != 0) { //INSERT
                             showToast(pokemon.name + ' inserted!<br>ID = ' + response.insertId);
@@ -55,7 +71,7 @@ pokeApp.controller('PokemonController',
                                 cp: $scope.pokemon.cp,
                             });
                         } else { //UPDATE
-                            $http.jsonp(ws + 'findAll' + callback)
+                            $http.get(ws + 'findAll')
                                 .success(function(response) {
                                     $scope.pokemons = response;
                                     showToast(pokemon.name + ' updated!');
@@ -79,7 +95,14 @@ pokeApp.controller('PokemonController',
         };
 
         $scope.remove = function(pokemon) {
-            $http.jsonp(ws + 'remove' + '/' + pokemon.id + callback)
+            var url = ws + 'remove';
+            var data = {
+                id: pokemon.id
+            }
+
+            //Requests DELETE em Angular só aceita Body no campo de Options (header e body no mesmo paramêtro)
+            //Para ficar mais fácil, usaremos POST mesmo ;)
+            $http.post(url, data)
                 .success(function(response) {
                     var index = $scope.pokemons.indexOf(pokemon);
                     $scope.pokemons.splice(index, 1);
