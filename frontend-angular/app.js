@@ -118,5 +118,5 @@ pokeApp.controller('PokemonController',
 );
 
 function showToast(text) {
-    Materialize.toast(text, 4000, 'rounded');
+    M.toast({html: text, classes: 'rounded'});
 }

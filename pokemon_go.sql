@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.7.4
+-- version 4.8.0.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: 09-Nov-2017 às 19:59
--- Versão do servidor: 10.1.28-MariaDB
--- PHP Version: 7.1.10
+-- Generation Time: Jun 24, 2018 at 03:18 AM
+-- Server version: 10.1.32-MariaDB
+-- PHP Version: 7.2.5
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -21,11 +21,13 @@ SET time_zone = "+00:00";
 --
 -- Database: `pokemon_go`
 --
+CREATE DATABASE IF NOT EXISTS `pokemon_go` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+USE `pokemon_go`;
 
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `pokemon`
+-- Table structure for table `pokemon`
 --
 
 CREATE TABLE `pokemon` (
@@ -35,7 +37,7 @@ CREATE TABLE `pokemon` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Extraindo dados da tabela `pokemon`
+-- Dumping data for table `pokemon`
 --
 
 INSERT INTO `pokemon` (`id`, `name`, `cp`) VALUES
@@ -47,7 +49,9 @@ INSERT INTO `pokemon` (`id`, `name`, `cp`) VALUES
 (6, 'Charizard', 35),
 (7, 'Squirtle', 65),
 (8, 'Wartotle', 76),
-(9, 'Blastoise', 78);
+(9, 'Blastoise', 78),
+(10, 'Teste', 123),
+(11, 'Teste', 123);
 
 --
 -- Indexes for dumped tables
@@ -67,7 +71,7 @@ ALTER TABLE `pokemon`
 -- AUTO_INCREMENT for table `pokemon`
 --
 ALTER TABLE `pokemon`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
