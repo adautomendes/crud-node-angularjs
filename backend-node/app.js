@@ -15,7 +15,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 /** Definição da porta onde será executada a nossa aplicação */
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 3000;
 
 //Rotas da nossa API:
 //==============================================================
@@ -27,7 +27,7 @@ const pokemon = express.Router();
 app.use('/pokemon', pokemon);
 
 /* Funções das rotas */
-pokemon.post('/', function (req, res) {
+pokemon.post('/', async (req, res) => {
     // Desestruturação do body
     const { name, cp } = req.body;
 
@@ -43,7 +43,7 @@ pokemon.post('/', function (req, res) {
     res.json(pokemonCriado);
 });
 
-pokemon.post('/:id', function (req, res) {
+pokemon.patch('/:id', async (req, res) => {
     const id = req.params.id;
     const { name, cp } = req.body;
 
@@ -62,31 +62,20 @@ pokemon.post('/:id', function (req, res) {
     res.json(pokemonAtualizado);
 });
 
-pokemon.get('/', function (req, res) {
+pokemon.get('/', async (req, res) => {
     let id = req.query.id;
-    let nome = req.query.nome;
-    let cp = req.query.cp;
+    let name = req.query.name;
 
     if (id) {
         //Busca por id
         let pokemons = await Pokemon.findByPk(id);
         res.json(pokemons);
-    } else if (nome) {
+    } else if (name) {
         //Busca por marca e modelo
         let pokemons = await Pokemon.findAll(
             {
                 where: {
-                    nome
-                }
-            }
-        );
-        res.json(pokemons);
-    } else if (cp) {
-        //Busca por marca
-        let pokemons = await Pokemon.findAll(
-            {
-                where: {
-                    cp
+                    name
                 }
             }
         );
@@ -98,8 +87,8 @@ pokemon.get('/', function (req, res) {
     }
 });
 
-pokemon.delete('/:id', function (req, res) {
-    const id = req.body.id;
+pokemon.delete('/:id', async (req, res) => {
+    const id = req.params.id;
 
     let nExcluidos = await Pokemon.destroy(
         {

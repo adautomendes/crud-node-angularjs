@@ -4,7 +4,7 @@ const conexao = require("../database/Conexao");
 
 const Pokemon = conexao.define('pokemon',
     {
-        nome: Sequelize.TEXT,
+        name: Sequelize.TEXT,
         cp: Sequelize.INTEGER
     },
     {

@@ -49,9 +49,7 @@ INSERT INTO `pokemon` (`id`, `name`, `cp`) VALUES
 (6, 'Charizard', 35),
 (7, 'Squirtle', 65),
 (8, 'Wartotle', 76),
-(9, 'Blastoise', 78),
-(10, 'Teste', 123),
-(11, 'Teste', 123);
+(9, 'Blastoise', 78);
 
 --
 -- Indexes for dumped tables
