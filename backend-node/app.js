@@ -1,17 +1,11 @@
 /* Chamada das Packages que iremos precisar para a nossa aplicação */
-var express = require('express'); //chamando o pacote express
-var cors = require('cors')
-var app = express(); //definção da nossa aplicação através do express
-var bodyParser = require('body-parser'); //chamando o pacote body-parser
-var mysql = require('mysql');
+const express = require('express'); //chamando o pacote express
+const cors = require('cors')
+const app = express(); //definção da nossa aplicação através do express
+const bodyParser = require('body-parser'); //chamando o pacote body-parser
 
-/** Vars for DB config */
-var objConn = {
-        host: 'localhost',
-        user: 'root',
-        password: '',
-        database: 'pokemon_go'
-    };
+/* Importação da model do Sequelize */
+const Pokemon = require('./models/Pokemon');
 
 /** Configuração da variável 'app' para usar o 'bodyParser()'.
  * Ao fazermos isso nos permitirá retornar os dados a partir de um POST
@@ -21,131 +15,107 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 /** Definição da porta onde será executada a nossa aplicação */
-var port = process.env.PORT || 5000;
+const port = process.env.PORT || 5000;
 
 //Rotas da nossa API:
 //==============================================================
 
 /* Aqui o 'pokemon' irá pegar as instâncias das Rotas do Express */
-var pokemon = express.Router();
-
-/* Rota de Teste para sabermos se tudo está realmente funcionando (acessar através: GET: http://localhost:8000/pokemon) */
-pokemon.post('/insert', function(req, res) {
-    var name = req.body.name;
-    var cp = req.body.cp;
-
-    var connection = mysql.createConnection(objConn);
-
-    connection.connect();
-
-    var strQuery = "INSERT INTO pokemon (name, cp) VALUES ('" + name + "', '" + cp + "');";
-
-    console.log(strQuery);
-
-    connection.query(strQuery, function(err, rows, fields) {
-        if (!err) {
-            res.jsonp(rows);
-        } else {
-            res.jsonp(err);
-        }
-    });
-
-    connection.end();
-});
-
-pokemon.post('/update', function(req, res) {
-    var id = req.body.id;
-    var name = req.body.name;
-    var cp = req.body.cp;
-
-    var connection = mysql.createConnection(objConn);
-
-    connection.connect();
-
-    var strQuery = "UPDATE pokemon SET name = '" + name + "', cp = '" + cp + "' WHERE id = " + id + ";";
-
-    console.log(strQuery);
-
-    connection.query(strQuery, function(err, rows, fields) {
-        if (!err) {
-            res.jsonp(rows);
-        } else {
-            res.jsonp(err);
-        }
-    });
-
-    connection.end();
-});
-
-pokemon.get('/findAll', function(req, res) {
-    var connection = mysql.createConnection(objConn);
-    connection.connect();
-
-    var strQuery = "SELECT id, name, cp FROM pokemon";
-
-    console.log(strQuery);
-
-    connection.query(strQuery, function(err, rows, fields) {
-        if (!err) {
-        	res.jsonp(rows);
-        } else {
-        	res.jsonp(err);
-        }
-    });
-
-    connection.end();
-});
-
-pokemon.get('/findById/:id', function(req, res) {
-    var id = req.params.id;
-
-    var connection = mysql.createConnection(objConn);
-
-    connection.connect();
-
-    var strQuery = "SELECT id, name, cp FROM pokemon WHERE id = " + id;
-
-    console.log(strQuery);
-
-    connection.query(strQuery, function(err, rows, fields) {
-        if (!err) {
-            res.jsonp(rows);
-        } else {
-            res.jsonp(err);
-        }
-    });
-
-    connection.end();
-});
-
-//Requests DELETE em Angular aceitam Body com dificuldade, então usaremos POST
-pokemon.post('/remove', function(req, res) {
-    console.log(req.body);
-    var id = req.body.id;
-
-    var connection = mysql.createConnection(objConn);
-
-    connection.connect();
-
-    var strQuery = "DELETE FROM pokemon WHERE id = " + id;
-
-    console.log(strQuery);
-
-    connection.query(strQuery, function(err, rows, fields) {
-        if (!err) {
-            res.jsonp(rows);
-        } else {
-            res.jsonp(err);
-        }
-    });
-
-    connection.end();
-});
+const pokemon = express.Router();
 
 /* Todas as nossas rotas serão prefixadas com '/pokemon' */
 app.use('/pokemon', pokemon);
 
+/* Funções das rotas */
+pokemon.post('/', function (req, res) {
+    // Desestruturação do body
+    const { name, cp } = req.body;
+
+    let pokemon = await Pokemon.create(
+        {
+            name,
+            cp
+        }
+    );
+
+    let pokemonCriado = await Pokemon.findByPk(pokemon.id);
+
+    res.json(pokemonCriado);
+});
+
+pokemon.post('/:id', function (req, res) {
+    const id = req.params.id;
+    const { name, cp } = req.body;
+
+    await Pokemon.update(
+        {
+            name,
+            cp
+        },
+        {
+            where: { id: id }
+        }
+    );
+
+    let pokemonAtualizado = await Pokemon.findByPk(id);
+
+    res.json(pokemonAtualizado);
+});
+
+pokemon.get('/', function (req, res) {
+    let id = req.query.id;
+    let nome = req.query.nome;
+    let cp = req.query.cp;
+
+    if (id) {
+        //Busca por id
+        let pokemons = await Pokemon.findByPk(id);
+        res.json(pokemons);
+    } else if (nome) {
+        //Busca por marca e modelo
+        let pokemons = await Pokemon.findAll(
+            {
+                where: {
+                    nome
+                }
+            }
+        );
+        res.json(pokemons);
+    } else if (cp) {
+        //Busca por marca
+        let pokemons = await Pokemon.findAll(
+            {
+                where: {
+                    cp
+                }
+            }
+        );
+        res.json(pokemons);
+    } else {
+        //Buscar todos
+        let pokemons = await Pokemon.findAll();
+        res.json(pokemons);
+    }
+});
+
+pokemon.delete('/:id', function (req, res) {
+    const id = req.body.id;
+
+    let nExcluidos = await Pokemon.destroy(
+        {
+            where: { id: id }
+        }
+    );
+
+    res.json(
+        {
+            nExcluidos: nExcluidos
+        }
+    );
+});
+
 //Iniciando o Servidor (Aplicação):
 //==============================================================
-app.listen(port);
-console.log('Iniciando a aplicação na porta ' + port);
+app.listen(port, () => {
+    console.log('Iniciando a aplicação na porta ' + port);
+});
