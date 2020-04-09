@@ -1,5 +1,4 @@
-var ws = 'http://127.0.0.1:5000/pokemon/';
-var callback = '?callback=JSON_CALLBACK';
+var ws = 'http://127.0.0.1:3000/pokemon/';
 
 /**
  * Main AngularJS Web Application
@@ -10,23 +9,22 @@ pokeApp.controller('PokemonController',
     function PokemonController($scope, $http) {
         $scope.pokemons = [];
 
-        $scope.init = function() {
-            $http.get(ws + 'findAll')
-                .success(function(response) {
-                    $scope.pokemons = response;
+        $scope.init = function () {
+            $http.get(ws)
+                .then(function (response) {
+                    $scope.pokemons = response.data;
                     showToast('Load completed!');
-                })
-                .error(function(response) {
-                    console.log('Error (init) -> ' + response);
+                }, function (err) {
+                    console.log('Error (init) -> ' + err);
                 });
         };
 
-        $scope.new = function() {
+        $scope.new = function () {
             delete $scope.pokemon;
         };
 
-        $scope.save = function() {
-            if($scope.pokemon == null) {
+        $scope.save = function () {
+            if ($scope.pokemon == null) {
                 showToast('Enter pokemon name and CP');
                 return;
             }
@@ -38,79 +36,73 @@ pokeApp.controller('PokemonController',
             };
 
             if (pokemon.name != null && pokemon.cp != null) {
-                var url = ws;
-
                 /** Definindo dados a serem enviados e qual operação */
                 var data;
+
+                /** Definindo headers da request */
+                var config = {}
+
                 if (pokemon.id == null) {
-                    url += 'insert'
-                     data = {
+                    //INSERT
+                    data = {
                         name: pokemon.name,
                         cp: pokemon.cp
                     };
+
+                    $http.post(ws, data)
+                        .then(function (response) {
+                            let data = response.data;
+                            showToast(pokemon.name + ' inserted!<br>ID = ' + data.id);
+
+                            $scope.pokemons.push({
+                                id: data.id,
+                                name: data.name,
+                                cp: data.cp
+                            });
+                        }, function (err) {
+                            console.log('Error (insert) -> ' + err);
+                        });
                 } else {
-                    url += 'update';
+                    //UPDATE
                     data = {
                         id: pokemon.id,
                         name: pokemon.name,
                         cp: pokemon.cp
                     };
+
+                    $http.patch(ws + '/' + data.id, data)
+                        .then(function (response) {
+                            let data = response.data;
+                            showToast(pokemon.name + ' updated!<br>ID = ' + data.id);
+                        }, function (err) {
+                            console.log('Error (update) -> ' + err);
+                        });
                 }
 
-                /** Definindo headers da request */
-                var config = {}
-
-                $http.post(url, data)
-                    .success(function(response) {
-                        if (response.insertId != 0) { //INSERT
-                            showToast(pokemon.name + ' inserted!<br>ID = ' + response.insertId);
-
-                            $scope.pokemons.push({
-                                id: response.insertId,
-                                name: $scope.pokemon.name,
-                                cp: $scope.pokemon.cp,
-                            });
-                        } else { //UPDATE
-                            $http.get(ws + 'findAll')
-                                .success(function(response) {
-                                    $scope.pokemons = response;
-                                    showToast(pokemon.name + ' updated!');
-                                })
-                                .error(function(response) {
-                                    console.log('Error (save -> findAll) -> ' + response);
-                                });
-                        }
-                        delete $scope.pokemon;
-                    })
-                    .error(function(response) {
-                        console.log('Error (save) -> ' + response);
-                    });
+                $scope.pokemon = null;
             } else {
-
+                showToast('Enter pokemon name and CP');
+                return;
             }
         };
 
-        $scope.edit = function(pokemon) {
+        $scope.edit = function (pokemon) {
             $scope.pokemon = pokemon;
         };
 
-        $scope.remove = function(pokemon) {
-            var url = ws + 'remove';
+        $scope.remove = function (pokemon) {
             var data = {
                 id: pokemon.id
             }
 
-            //Requests DELETE em Angular só aceita Body no campo de Options (header e body no mesmo paramêtro)
-            //Para ficar mais fácil, usaremos POST mesmo ;)
-            $http.post(url, data)
-                .success(function(response) {
+            $http.delete(ws + '/' + data.id, data)
+                .then(function (response) {
                     var index = $scope.pokemons.indexOf(pokemon);
                     $scope.pokemons.splice(index, 1);
 
                     showToast(pokemon.name + ' removed!');
-                })
-                .error(function(response) {
-                    console.log('Erro (remove) -> ' + response);
+                }, function (err) {
+                    console.log('Erro (remove) -> ' + err);
                 });
 
         };
@@ -118,5 +110,5 @@ pokeApp.controller('PokemonController',
 );
 
 function showToast(text) {
-    M.toast({html: text, classes: 'rounded'});
+    M.toast({ html: text, classes: 'rounded' });
 }
