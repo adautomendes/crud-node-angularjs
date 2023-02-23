@@ -14,7 +14,7 @@
         "cors": "^2.8.5",
         "express": "^4.17.3",
         "mysql2": "^2.1.0",
-        "sequelize": "^5.22.5"
+        "sequelize": "^6.28.2"
     },
     "devDependencies": {
         "nodemon": "^2.0.20"
